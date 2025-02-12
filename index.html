@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PureLLM – Private AI Chat</title>
+
+    <!-- Favicon (Replace 'logo.png' with your actual file) -->
+    <link rel="icon" type="image/png" href="assets/logo_withback.png">
+
+    <!-- Google Fonts (Roboto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #0A0A0A;
+            color: #FFFFFF;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            backdrop-filter: blur(8px);
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        nav .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        nav .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        nav .logo h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2196F3;
+            /* main blue color */
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #FFFFFF;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #2196F3;
+        }
+
+        /* Hero Section */
+        .hero {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 2rem;
+            text-align: center;
+            position: relative;
+            /* Updated brighter gradient */
+            background: linear-gradient(135deg, #0D2746 0%, #000000 80%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin-top: 60px;
+            /* to offset the fixed navbar */
+            animation: fadeIn 1.5s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            color: #2196F3;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #CCCCCC;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero .cta-button {
+            background-color: #2196F3;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #2196F3, #1A73E8);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(33, 150, 243, 0.3);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(90deg, #1A73E8, #0D47A1);
+            box-shadow: 0px 6px 15px rgba(33, 150, 243, 0.5);
+            transform: translateY(-3px);
+        }
+
+
+        .hero .cta-button:hover {
+            background-color: #1a7ccc;
+        }
+
+        /* Main Sections */
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        section h3:after {
+            content: "";
+            width: 60px;
+            height: 3px;
+            background-color: #2196F3;
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+        }
+
+        section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #CCCCCC;
+        }
+
+        section ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+            list-style: disc;
+            color: #CCCCCC;
+        }
+
+        section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Divider */
+        .divider {
+            width: 80%;
+            height: 1px;
+            background-color: #333;
+            margin: 2rem auto;
+        }
+
+        /* Model Cards */
+        .model-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .model-card {
+            background-color: #1A1A1A;
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 300px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .model-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .model-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2196F3;
+        }
+
+        .model-card p {
+            color: #CCCCCC;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #000000;
+            padding: 2rem 2rem;
+            color: #777777;
+            text-align: center;
+        }
+
+        footer a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+                /* Simple example; you can add a hamburger menu if desired */
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            section {
+                padding: 2rem 1rem;
+            }
+
+            .model-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .model-card {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <!-- Example logo: replace with your own -->
+            <img src="assets/logo_withback.png" alt="PureLLM Logo">
+            <h1>PureLLM</h1>
+        </div>
+        <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#models">Models</a></li>
+            <li><a href="#who">Who Is It For?</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>PureLLM – Private AI Chat</h2>
+            <p>
+                PureLLM lets you run advanced language models entirely on your device, offering complete privacy, high
+                performance, and flexibility.
+                Experience a fast and secure chat without requiring an internet connection.
+            </p>
+            <button class="cta-button" onclick="scrollToSection('features')">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+        <h3>Why Choose PureLLM?</h3>
+        <ul>
+            <li><strong>Fully Offline & Private:</strong> Your conversations stay on your device—no cloud processing, no
+                data tracking.</li>
+            <li><strong>Powerful AI Models:</strong> Supports Gemma, Phi-2, Falcon, and StableLM, plus the ability to
+                add or convert custom models.</li>
+            <li><strong>Optimized for Local Processing:</strong> Runs smoothly even on devices with 4GB RAM, fully
+                leveraging high-performance hardware.</li>
+            <li><strong>Model Selection & Conversion:</strong> Download pre-optimized models or convert your own PyTorch
+                models for local execution.</li>
+            <li><strong>Customizable AI Experience:</strong> Tailor the chatbot's responses by choosing the model that
+                best fits your use case.</li>
+            <li><strong>No Subscription Required:</strong> A one-time setup with no dependency on cloud services.</li>
+        </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- How It Works -->
+    <section id="how-it-works">
+        <h3>How It Works</h3>
+        <p>
+            PureLLM allows you to download and run language models on your own device, keeping your data safe and
+            private since you remain offline.
+        </p>
+        <ul>
+            <li><strong>Select a Model:</strong> Use ready-to-go models like Gemma-2B or convert your own.</li>
+            <li><strong>Run Offline AI:</strong> Load the model and get instant responses without an internet
+                connection.</li>
+            <li><strong>Chat & Optimize:</strong> Enjoy low-latency, real-time answers for a fast experience.</li>
+        </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Models -->
+    <section id="models">
+        <h3>Advanced Model Support & Conversion</h3>
+        <p>
+            PureLLM supports a variety of models with different sizes and accuracy levels. You can also use Google’s AI
+            Edge Torch to convert your PyTorch models to TFLite.
+        </p>
+        <div class="model-cards">
+            <!-- Card 1 -->
+            <div class="model-card">
+                <h4>Gemma-2 (3.2GB, INT8)</h4>
+                <p>Optimized for scenarios requiring deep conversations and high accuracy.</p>
+            </div>
+            <!-- Card 2 -->
+            <div class="model-card">
+                <h4>Gemma (1.35GB, INT4)</h4>
+                <p>Lightweight and efficient, suitable for devices with as little as 4GB RAM.</p>
+            </div>
+            <!-- Card 3 -->
+            <div class="model-card">
+                <h4>Phi-2, Falcon, StableLM</h4>
+                <p>
+                    Convert and add additional models to create your own custom AI experience.
+                </p>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;">
+            Explore the conversion process in MediaPipe Studio demos, and refer to Google AI Edge Torch documentation
+            for more details.
+        </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Who Is It For? -->
+    <section id="who">
+        <h3>Who Is This For?</h3>
+        <ul>
+            <li><strong>AI Enthusiasts & Developers:</strong> Experiment with offline AI models and integrations.</li>
+            <li><strong>Privacy-Conscious Users:</strong> Keep your data offline, away from cloud servers.</li>
+            <li><strong>Students & Researchers:</strong> Conduct academic research and analysis without internet
+                constraints.</li>
+            <li><strong>Professionals & Writers:</strong> Generate text, ideas, and summaries locally, optimized for
+                your device.</li>
+        </ul>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Call to Action -->
+    <!-- Call to Action -->
+    <section style="text-align: center;">
+        <h3>Get Started Now</h3>
+        <p>
+            With PureLLM, you have full control. Enjoy fast, private, and customizable AI without relying on any
+            cloud-based services.
+        </p>
+        <button class="cta-button" onclick="alert('Download link or process will be here.')">Download Now</button>
+    </section>
+
+
+    <!-- Footer -->
+    <footer id="footer">
+        <p>© 2025 PureLLM. All rights reserved.</p>
+        <p>
+            <a href="mailto:info@purellm.com">Contact</a> |
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Use</a>
+        </p>
+    </footer>
+
+    <!-- Small JS for Smooth Scroll -->
+    <script>
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            window.scrollTo({
+                top: section.offsetTop - 70,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+
+</html>

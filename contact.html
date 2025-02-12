@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PureLLM – Feedback & Contact</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo_withback.png">
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+        import { firebaseConfig } from "./config.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const validateEmail = (email) => {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        };
+
+        const submitFeedback = async () => {
+            const email = document.getElementById("email").value.trim();
+            const feedback = document.getElementById("feedback").value.trim();
+
+            if (!email || !feedback) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            try {
+                const feedbackRef = collection(db, "feedbacks");
+                await addDoc(feedbackRef, {
+                    email,
+                    feedback,
+                    timestamp: new Date().toISOString(),
+                });
+
+                alert("Thank you for your feedback!");
+                document.getElementById("email").value = "";
+                document.getElementById("feedback").value = "";
+            } catch (error) {
+                console.error("Error submitting feedback:", error);
+                alert("An error occurred. Please try again later.");
+            }
+        };
+
+        window.onload = () => {
+            document.getElementById("submitButton").addEventListener("click", submitFeedback);
+        };
+    </script>
+
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0A0A0A;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: linear-gradient(135deg, #1A1A2E, #16213E);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .logo-container h1 {
+            color: #2196F3;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #1A1A1A;
+            color: #FFFFFF;
+            border: 1px solid #333;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: linear-gradient(90deg, #2196F3, #0D47A1);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.2);
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #0D47A1, #1565C0);
+            box-shadow: 0 6px 12px rgba(33, 150, 243, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Contact Section */
+        .contact {
+            width: 90%;
+            max-width: 500px;
+            background: linear-gradient(135deg, #16213E, #0A0A0A);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .contact p {
+            color: #BBBBBB;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .contact a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .logo-container h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Feedback Form -->
+    <div class="container">
+        <div class="logo-container">
+            <img src="assets/logo_withback.png" alt="PureLLM Logo">
+            <h1>PureLLM</h1>
+        </div>
+        <h2>Feedback</h2>
+        <div class="form-group">
+            <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <textarea id="feedback" placeholder="Write your feedback here..." rows="5" required></textarea>
+        </div>
+        <button type="button" id="submitButton">Submit Feedback</button>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="contact">
+        <h2>Contact Us</h2>
+        <p>For any inquiries, please reach out to us via email:</p>
+        <p><a href="mailto:support@purellm.com">support@purellm.com</a></p>
+        <p>Follow us on social media:</p>
+        <p>
+            <a href="https://twitter.com/purellm" target="_blank">Twitter</a> |
+            <a href="https://linkedin.com/company/purellm" target="_blank">LinkedIn</a>
+        </p>
+    </div>
+
+</body>
+
+</html>
